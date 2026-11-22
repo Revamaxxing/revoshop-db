@@ -29,7 +29,7 @@ Tables: `users`, `categories`, `products`, `orders`, `order_items`.
 `schema.sql` drops and recreates all tables, so re-running it resets the database.
 
 ## Schema
-![ERD](docs/erd.png)
+
 
 | Table | Primary key | Foreign keys |
 |---|---|---|
