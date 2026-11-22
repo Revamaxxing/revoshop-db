@@ -29,7 +29,7 @@ Tables: `users`, `categories`, `products`, `orders`, `order_items`.
 `schema.sql` drops and recreates all tables, so re-running it resets the database.
 
 ## ERD Reva
-![erd](ERD Reva.png)
+![erd](ERD%20Reva.png)
 
 
 ## Schema
