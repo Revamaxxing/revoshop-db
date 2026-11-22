@@ -1,0 +1,10 @@
+.DS_Store
+.vscode/
+.idea/
+.env
+*.env
+.pgpass
+*.dump
+*.backup
+*.log
+pgadmin4.db
