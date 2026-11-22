@@ -40,3 +40,50 @@ Tables: `users`, `categories`, `products`, `orders`, `order_items`.
 | order_items | order_item_id | order_id -> orders, product_id -> products |
 
 `order_items` is the junction table between orders and products (many-to-many).
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    users ||--o{ orders : places
+    categories ||--o{ products : contains
+    orders ||--o{ order_items : includes
+    products ||--o{ order_items : "appears in"
+
+    users {
+        int user_id PK
+        varchar first_name
+        varchar last_name
+        varchar email UK
+        varchar password_hash
+        varchar phone_number
+        timestamptz created_at
+    }
+    categories {
+        int category_id PK
+        varchar category_name UK
+        text description
+    }
+    products {
+        int product_id PK
+        int category_id FK
+        varchar product_name
+        text description
+        numeric price
+        int stock_quantity
+        timestamptz created_at
+    }
+    orders {
+        int order_id PK
+        int user_id FK
+        timestamptz order_date
+        varchar status
+        text shipping_address
+    }
+    order_items {
+        int order_item_id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        numeric unit_price
+    }
+```
