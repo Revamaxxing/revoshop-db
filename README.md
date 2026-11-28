@@ -2,10 +2,20 @@
 
 PostgreSQL schema, seed data and sample queries for the RevoShop store.
 Tables: `users`, `categories`, `products`, `orders`, `order_items`.
+All prices are in Indonesian Rupiah (IDR).
 
 ## Prerequisites
-- PostgreSQL 16+ (developed on 18) with `psql` available
+- PostgreSQL 16+ (developed on 18)
 - pgAdmin 4 (optional, for the GUI)
+
+> **Note: `psql` may not be on your PATH.** If you see `psql: command not found`,
+> call it with its full path or add its folder to your PATH:
+> - macOS (EDB installer): `/Library/PostgreSQL/18/bin/psql`
+> - macOS (Homebrew): `/opt/homebrew/opt/postgresql@16/bin/psql`
+> - Windows: `C:\Program Files\PostgreSQL\18\bin\psql.exe`
+> - Linux (apt): normally already on PATH
+>
+> The commands below use plain `psql`; replace it with the full path if needed.
 
 ## Setup
 1. Create the database (pgAdmin: right-click **Databases > Create > Database...**
@@ -26,14 +36,11 @@ Tables: `users`, `categories`, `products`, `orders`, `order_items`.
    psql -h localhost -U postgres -d revoshop_db -f queries.sql
    ```
 
-`schema.sql` drops and recreates all tables, so re-running it resets the database.
-
-## ERD Reva
-![erd](ERD%20Reva.png)
-
+`schema.sql` drops and recreates all tables, so re-running it (then `seed.sql`)
+resets the database.
 
 ## Schema
-
+![ERD](docs/erd.png)
 
 | Table | Primary key | Foreign keys |
 |---|---|---|
@@ -44,50 +51,10 @@ Tables: `users`, `categories`, `products`, `orders`, `order_items`.
 | order_items | order_item_id | order_id -> orders, product_id -> products |
 
 `order_items` is the junction table between orders and products (many-to-many).
-## Entity Relationship Diagram
 
-```mermaid
-erDiagram
-    users ||--o{ orders : places
-    categories ||--o{ products : contains
-    orders ||--o{ order_items : includes
-    products ||--o{ order_items : "appears in"
-
-    users {
-        int user_id PK
-        varchar first_name
-        varchar last_name
-        varchar email UK
-        varchar password_hash
-        varchar phone_number
-        timestamptz created_at
-    }
-    categories {
-        int category_id PK
-        varchar category_name UK
-        text description
-    }
-    products {
-        int product_id PK
-        int category_id FK
-        varchar product_name
-        text description
-        numeric price
-        int stock_quantity
-        timestamptz created_at
-    }
-    orders {
-        int order_id PK
-        int user_id FK
-        timestamptz order_date
-        varchar status
-        text shipping_address
-    }
-    order_items {
-        int order_item_id PK
-        int order_id FK
-        int product_id FK
-        int quantity
-        numeric unit_price
-    }
-```
+## Design notes
+- `order_items.unit_price` stores the price at the time of purchase, so later
+  changes to `products.price` do not rewrite order history.
+- `ON DELETE CASCADE` is only on `order_items.order_id`: a line item cannot exist
+  without its order. `product_id` and `orders.user_id` have no cascade, so
+  products or users with order history cannot be deleted by accident.
